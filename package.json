@@ -1,17 +1,16 @@
 {
   "name": "mesto-ad-main",
   "version": "1.0.0",
-  "description": "Стартовый набор для выполнения проектной работы Место",
-  "main": "index.js",
+  "description": "Проект Mesto с валидацией форм",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "preview": "vite preview"
   },
-  "keywords": [],
+  "keywords": ["mesto", "javascript", "validation"],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "devDependencies": {
     "vite": "^7.3.1"
   }
