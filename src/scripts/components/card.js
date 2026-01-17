@@ -43,7 +43,7 @@ export const deleteCard = (cardElement) => {
   cardElement.remove();
 };
 
-export const likeCard = (cardElement, updatedLikes, currentUserID) => {
+export const updateLikeStatus  = (cardElement, updatedLikes, currentUserID) => {
   const likeButton = cardElement.querySelector(".card__like-button");
   const likeCountElement = cardElement.querySelector(".card__like-count");
   
