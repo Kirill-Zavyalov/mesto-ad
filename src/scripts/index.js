@@ -265,28 +265,28 @@ const handleLogoClick = () => {
       popupInfoList.innerHTML = "";
       popupUserList.innerHTML = "";
       
+      // Собираем статистику по пользователям
+      const userStats = {};
+      cards.forEach(card => {
+        const userId = card.owner._id;
+        if (!userStats[userId]) {
+          userStats[userId] = {
+            user: card.owner,
+            count: 0
+          };
+        }
+        userStats[userId].count++;
+      });
+      
+      // Сортируем пользователей по количеству карточек (от большего к меньшему)
+      const sortedUsers = Object.values(userStats).sort((a, b) => b.count - a.count);
+      
+      // Добавляем статистику
       popupInfoList.append(
         createInfoString("Всего карточек:", cards.length)
       );
       
-      const userStats = {};
-      cards.forEach(card => {
-        const userId = card.owner._id;
-        userStats[userId] = userStats[userId] || {
-          user: card.owner,
-          count: 0
-        };
-        userStats[userId].count++;
-      });
-      
-      const mostActive = Object.values(userStats).reduce((prev, current) => 
-        prev.count > current.count ? prev : current
-      );
-      
-      popupInfoList.append(
-        createInfoString("Самый активный пользователь:", `${mostActive.user.name} (${mostActive.count} карточек)`)
-      );
-      
+      // Первая и последняя карточки
       if (cards.length > 0) {
         const sortedCards = [...cards].sort((a, b) => 
           new Date(a.createdAt) - new Date(b.createdAt)
@@ -301,15 +301,24 @@ const handleLogoClick = () => {
         );
       }
       
-      const uniqueUsers = {};
-      cards.forEach(card => {
-        if (!uniqueUsers[card.owner._id]) {
-          uniqueUsers[card.owner._id] = card.owner;
-        }
-      });
+      // Статистика по пользователям
+      popupInfoList.append(
+        createInfoString("Всего пользователей:", Object.keys(userStats).length)
+      );
       
-      Object.values(uniqueUsers).forEach(user => {
-        popupUserList.append(createUserPreview(user));
+      // Максимум карточек от одного пользователя
+      if (sortedUsers.length > 0) {
+        popupInfoList.append(
+          createInfoString("Максимум карточек от одного:", sortedUsers[0].count)
+        );
+      }
+      
+      // Добавляем всех пользователей в список
+      sortedUsers.forEach(userStat => {
+        const userItem = createUserPreview(userStat.user);
+        // Можно добавить количество карточек пользователя в подсказку или как текст
+        userItem.title = `${userStat.user.name} (${userStat.count} карточек)`;
+        popupUserList.append(userItem);
       });
       
       openModalWindow(usersStatsModalWindow);
