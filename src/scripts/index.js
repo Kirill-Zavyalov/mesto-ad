@@ -141,7 +141,6 @@ const handleCardFormSubmit = (evt) => {
       console.log("Ошибка при добавлении карточки:", err);
     })
     .finally(() => {
-      // Возвращаем исходный текст кнопки
       submitButton.textContent = originalText;
     });
 };
