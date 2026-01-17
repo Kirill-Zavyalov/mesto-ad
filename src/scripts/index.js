@@ -265,28 +265,23 @@ const handleLogoClick = () => {
       popupInfoList.innerHTML = "";
       popupUserList.innerHTML = "";
       
-      // Собираем статистику по пользователям
       const userStats = {};
+      const uniqueUsers = {};
+      
       cards.forEach(card => {
         const userId = card.owner._id;
-        if (!userStats[userId]) {
-          userStats[userId] = {
-            user: card.owner,
-            count: 0
-          };
+        
+        if (!uniqueUsers[userId]) {
+          uniqueUsers[userId] = card.owner;
         }
-        userStats[userId].count++;
+        
+        userStats[userId] = (userStats[userId] || 0) + 1;
       });
       
-      // Сортируем пользователей по количеству карточек (от большего к меньшему)
-      const sortedUsers = Object.values(userStats).sort((a, b) => b.count - a.count);
-      
-      // Добавляем статистику
       popupInfoList.append(
         createInfoString("Всего карточек:", cards.length)
       );
       
-      // Первая и последняя карточки
       if (cards.length > 0) {
         const sortedCards = [...cards].sort((a, b) => 
           new Date(a.createdAt) - new Date(b.createdAt)
@@ -301,23 +296,32 @@ const handleLogoClick = () => {
         );
       }
       
-      // Статистика по пользователям
+      const totalUsers = Object.keys(uniqueUsers).length;
       popupInfoList.append(
-        createInfoString("Всего пользователей:", Object.keys(userStats).length)
+        createInfoString("Всего пользователей:", totalUsers)
       );
       
-      // Максимум карточек от одного пользователя
-      if (sortedUsers.length > 0) {
-        popupInfoList.append(
-          createInfoString("Максимум карточек от одного:", sortedUsers[0].count)
-        );
-      }
+      let maxCards = 0;
+      let maxUserId = null;
       
-      // Добавляем всех пользователей в список
-      sortedUsers.forEach(userStat => {
-        const userItem = createUserPreview(userStat.user);
-        // Можно добавить количество карточек пользователя в подсказку или как текст
-        userItem.title = `${userStat.user.name} (${userStat.count} карточек)`;
+      Object.entries(userStats).forEach(([userId, count]) => {
+        if (count > maxCards) {
+          maxCards = count;
+          maxUserId = userId;
+        }
+      });
+      
+      popupInfoList.append(
+        createInfoString("Максимум карточек от одного:", maxCards)
+      );
+      
+      Object.values(uniqueUsers).forEach(user => {
+        const template = document.querySelector("#popup-info-user-preview-template").content;
+        const userItem = template.querySelector(".popup__list-item").cloneNode(true);
+        
+        userItem.textContent = user.name;
+        userItem.title = `${user.name} - ${user.about}`;
+        
         popupUserList.append(userItem);
       });
       
