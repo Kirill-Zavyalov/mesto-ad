@@ -101,9 +101,23 @@ const handleAvatarFormSubmit = (evt) => {
   submitButton.textContent = "Сохранение...";
   submitButton.disabled = true;
   
-  setUserAvatar(avatarInput.value)
+  // Получаем URL из поля ввода
+  const avatarUrl = avatarInput.value.trim();
+  console.log("Отправляем URL аватара на сервер:", avatarUrl);
+  
+  setUserAvatar(avatarUrl)
     .then((userData) => {
-      profileAvatar.style.backgroundImage = `url(${userData.avatar})`;
+      console.log("Ответ от сервера после обновления аватара:", userData);
+      
+      // Проверяем, что сервер вернул URL аватара
+      if (userData.avatar) {
+        // Обновляем аватар на странице
+        profileAvatar.style.backgroundImage = `url('${userData.avatar}')`;
+        console.log("Аватар успешно обновлен на странице");
+      } else {
+        console.error("Сервер не вернул URL аватара");
+      }
+      
       closeModalWindow(avatarFormModalWindow);
       avatarForm.reset();
     })
@@ -193,7 +207,14 @@ Promise.all([getUserInfo(), getCardList()])
     
     profileTitle.textContent = userData.name;
     profileDescription.textContent = userData.about;
-    profileAvatar.style.backgroundImage = `url(${userData.avatar})`;
+    
+    // Устанавливаем аватар при загрузке страницы
+    if (userData.avatar) {
+      profileAvatar.style.backgroundImage = `url('${userData.avatar}')`;
+      console.log("Аватар загружен с сервера:", userData.avatar);
+    } else {
+      console.log("Аватар не найден в данных пользователя");
+    }
     
     const sortedCards = cards.sort((a, b) => 
       new Date(b.createdAt) - new Date(a.createdAt)
