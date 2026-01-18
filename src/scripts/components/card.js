@@ -9,18 +9,15 @@ export const createCardElement = (data, handlers, currentUserID) => {
   const deleteButton = cardElement.querySelector(".card__control-button_type_delete");
   const likeCountElement = cardElement.querySelector(".card__like-count");
 
-  // Устанавливаем заглушку перед загрузкой
   cardImage.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2YwZjBmMCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5Mb2FkaW5nLi4uPC90ZXh0Pjwvc3ZnPg==";
   cardImage.alt = name;
   
-  // Загружаем изображение с обработкой ошибок
   const img = new Image();
   img.crossOrigin = "anonymous"; // Для CORS
   img.onload = () => {
     cardImage.src = link;
   };
   img.onerror = () => {
-    // Заглушка для битых изображений
     cardImage.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2VlZWVlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM2NjYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZSBub3QgZm91bmQ8L3RleHQ+PC9zdmc+";
     console.warn(`Не удалось загрузить изображение: ${link}`);
   };
@@ -40,7 +37,6 @@ export const createCardElement = (data, handlers, currentUserID) => {
   }
 
   cardImage.addEventListener("click", () => {
-    // Проверяем, что изображение загрузилось
     if (!cardImage.src.includes('data:image/svg+xml')) {
       handlers.onPreviewPicture({ name, link });
     }
