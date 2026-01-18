@@ -103,7 +103,7 @@ const handleAvatarFormSubmit = (evt) => {
   
   setUserAvatar(avatarInput.value)
     .then((userData) => {
-      profileAvatar.style.backgroundImage = `url(${userData.avatar})`;
+      profileAvatar.style.backgroundImage = `url('${userData.avatar}')`;
       closeModalWindow(avatarFormModalWindow);
       avatarForm.reset();
     })
@@ -193,7 +193,10 @@ Promise.all([getUserInfo(), getCardList()])
     
     profileTitle.textContent = userData.name;
     profileDescription.textContent = userData.about;
-    profileAvatar.style.backgroundImage = `url(${userData.avatar})`;
+    
+    if (userData.avatar) {
+      profileAvatar.style.backgroundImage = `url('${userData.avatar}')`;
+    }
     
     const sortedCards = cards.sort((a, b) => 
       new Date(b.createdAt) - new Date(a.createdAt)
