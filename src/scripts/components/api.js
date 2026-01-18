@@ -13,12 +13,16 @@ const getResponseData = (res) => {
 export const getUserInfo = () => {
   return fetch(`${config.baseUrl}/users/me`, {
     headers: config.headers,
+    mode: 'cors',
+    credentials: 'omit'
   }).then(getResponseData);
 };
 
 export const getCardList = () => {
   return fetch(`${config.baseUrl}/cards`, {
     headers: config.headers,
+    mode: 'cors',
+    credentials: 'omit'
   }).then(getResponseData);
 };
 
@@ -27,6 +31,8 @@ export const setUserInfo = ({ name, about }) => {
     method: "PATCH",
     headers: config.headers,
     body: JSON.stringify({ name, about }),
+    mode: 'cors',
+    credentials: 'omit'
   }).then(getResponseData);
 };
 
@@ -35,6 +41,8 @@ export const setUserAvatar = (avatar) => {
     method: "PATCH",
     headers: config.headers,
     body: JSON.stringify({ avatar }),
+    mode: 'cors',
+    credentials: 'omit'
   }).then(getResponseData);
 };
 
@@ -43,6 +51,8 @@ export const addNewCard = ({ name, link }) => {
     method: "POST",
     headers: config.headers,
     body: JSON.stringify({ name, link }),
+    mode: 'cors',
+    credentials: 'omit'
   }).then(getResponseData);
 };
 
@@ -50,6 +60,8 @@ export const deleteCardApi = (cardID) => {
   return fetch(`${config.baseUrl}/cards/${cardID}`, {
     method: "DELETE",
     headers: config.headers,
+    mode: 'cors',
+    credentials: 'omit'
   }).then(getResponseData);
 };
 
@@ -57,5 +69,7 @@ export const changeLikeCardStatus = (cardID, isLiked) => {
   return fetch(`${config.baseUrl}/cards/likes/${cardID}`, {
     method: isLiked ? "DELETE" : "PUT",
     headers: config.headers,
+    mode: 'cors',
+    credentials: 'omit'
   }).then(getResponseData);
 };
