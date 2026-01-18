@@ -33,7 +33,7 @@ export const createCardElement = (data, handlers, currentUserID) => {
   });
 
   likeButton.addEventListener("click", () => {
-    handlers.onLikeIcon(_id, cardElement, isLikedByCurrentUser, currentUserID);
+    handlers.onLikeIcon(_id, isLikedByCurrentUser, cardElement);
   });
 
   return cardElement;
@@ -43,7 +43,7 @@ export const deleteCard = (cardElement) => {
   cardElement.remove();
 };
 
-export const updateLikeStatus  = (cardElement, updatedLikes, currentUserID) => {
+export const updateLikeStatus = (cardElement, updatedLikes, currentUserID) => {
   const likeButton = cardElement.querySelector(".card__like-button");
   const likeCountElement = cardElement.querySelector(".card__like-count");
   
