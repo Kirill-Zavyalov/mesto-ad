@@ -60,27 +60,11 @@ const validationSettings = {
 let currentUserID = null;
 let cardToDelete = { id: null, element: null };
 
-const checkImage = (url) => {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => resolve(true);
-    img.onerror = () => resolve(false);
-    img.src = url;
-  });
-};
-
 const handlePreviewPicture = ({ name, link }) => {
-  checkImage(link)
-    .then((isValid) => {
-      if (isValid) {
-        imageElement.src = link;
-        imageElement.alt = name;
-        imageCaption.textContent = name;
-        openModalWindow(imageModalWindow);
-      } else {
-        alert("Изображение не найдено или не загружается");
-      }
-    });
+  imageElement.src = link;
+  imageElement.alt = name;
+  imageCaption.textContent = name;
+  openModalWindow(imageModalWindow);
 };
 
 const handleProfileFormSubmit = (evt) => {
@@ -117,13 +101,7 @@ const handleAvatarFormSubmit = (evt) => {
   submitButton.textContent = "Сохранение...";
   submitButton.disabled = true;
   
-  checkImage(avatarInput.value)
-    .then((isValid) => {
-      if (!isValid) {
-        throw new Error("Неверная ссылка на изображение");
-      }
-      return setUserAvatar(avatarInput.value);
-    })
+  setUserAvatar(avatarInput.value)
     .then((userData) => {
       profileAvatar.style.backgroundImage = `url(${userData.avatar})`;
       closeModalWindow(avatarFormModalWindow);
@@ -131,14 +109,6 @@ const handleAvatarFormSubmit = (evt) => {
     })
     .catch((err) => {
       console.log("Ошибка при обновлении аватара:", err);
-      // Покажем пользователю понятное сообщение
-      const errorSpan = avatarForm.querySelector(".popup__error");
-      if (errorSpan) {
-        errorSpan.textContent = err.message || "Неверная ссылка на изображение";
-        errorSpan.classList.add("popup__error_visible");
-      } else {
-        alert(err.message || "Не удалось обновить аватар. Проверьте ссылку.");
-      }
     })
     .finally(() => {
       submitButton.textContent = originalText;
@@ -151,21 +121,13 @@ const handleCardFormSubmit = (evt) => {
   
   const submitButton = cardForm.querySelector(validationSettings.submitButtonSelector);
   const originalText = submitButton.textContent;
-  submitButton.textContent = "Проверка ссылки...";
+  submitButton.textContent = "Создание...";
   submitButton.disabled = true;
   
-  // Сначала проверяем изображение
-  checkImage(cardLinkInput.value)
-    .then((isValid) => {
-      if (!isValid) {
-        throw new Error("Неверная ссылка на изображение");
-      }
-      submitButton.textContent = "Создание...";
-      return addNewCard({
-        name: cardNameInput.value,
-        link: cardLinkInput.value,
-      });
-    })
+  addNewCard({
+    name: cardNameInput.value,
+    link: cardLinkInput.value,
+  })
     .then((cardData) => {
       placesWrap.prepend(
         createCardElement(cardData, {
@@ -179,15 +141,7 @@ const handleCardFormSubmit = (evt) => {
       cardForm.reset();
     })
     .catch((err) => {
-      console.log("Ошибка при добавлении карточки:", err.message);
-      // Покажем ошибку пользователю
-      const errorSpan = cardForm.querySelector(".popup__error");
-      if (errorSpan) {
-        errorSpan.textContent = err.message || "Ошибка при создании карточки";
-        errorSpan.classList.add("popup__error_visible");
-      } else {
-        alert(`Ошибка: ${err.message}. Пожалуйста, проверьте ссылку на изображение.`);
-      }
+      console.log("Ошибка при добавлении карточки:", err);
     })
     .finally(() => {
       submitButton.textContent = originalText;
@@ -216,7 +170,6 @@ const handleConfirmDelete = (evt) => {
     })
     .catch((err) => {
       console.log("Ошибка при удалении карточки:", err);
-      alert("Не удалось удалить карточку. Попробуйте еще раз.");
     })
     .finally(() => {
       submitButton.textContent = originalText;
@@ -232,39 +185,6 @@ const handleLikeClick = (cardId, isLiked, cardElement) => {
     .catch((err) => {
       console.log("Ошибка при изменении лайка:", err);
     });
-};
-
-const showLoadingError = (message) => {
-  const errorDiv = document.createElement('div');
-  errorDiv.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #ff6b6b;
-    color: white;
-    padding: 15px;
-    border-radius: 5px;
-    z-index: 10000;
-    font-family: Arial, sans-serif;
-    max-width: 300px;
-  `;
-  errorDiv.innerHTML = `
-    <strong>Ошибка загрузки</strong><br>
-    <small>${message}</small><br>
-    <button style="margin-top: 10px; padding: 5px 10px;">Закрыть</button>
-  `;
-  
-  errorDiv.querySelector('button').addEventListener('click', () => {
-    errorDiv.remove();
-  });
-  
-  document.body.appendChild(errorDiv);
-  
-  setTimeout(() => {
-    if (errorDiv.parentNode) {
-      errorDiv.remove();
-    }
-  }, 10000);
 };
 
 Promise.all([getUserInfo(), getCardList()])
@@ -291,7 +211,6 @@ Promise.all([getUserInfo(), getCardList()])
   })
   .catch((err) => {
     console.log("Ошибка при загрузке данных:", err);
-    showLoadingError("Не удалось загрузить данные с сервера. Проверьте интернет-соединение.");
   });
 
 openProfileFormButton.addEventListener("click", () => {
@@ -415,7 +334,6 @@ const handleLogoClick = () => {
     })
     .catch((err) => {
       console.log("Ошибка при загрузке статистики:", err);
-      alert("Не удалось загрузить статистику");
     });
 };
 
