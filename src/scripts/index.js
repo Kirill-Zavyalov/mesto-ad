@@ -6,7 +6,6 @@
   Из index.js не допускается что то экспортировать
 */
 
-
 import { createCardElement, deleteCard, updateLikeStatus } from "./components/card.js";
 import { openModalWindow, closeModalWindow, setCloseModalWindowEventListeners } from "./components/modal.js";
 import { enableValidation, clearValidation } from "./components/validation.js";
@@ -74,6 +73,7 @@ const handleProfileFormSubmit = (evt) => {
   const submitButton = profileForm.querySelector(validationSettings.submitButtonSelector);
   const originalText = submitButton.textContent;
   submitButton.textContent = "Сохранение...";
+  submitButton.disabled = true;
   
   setUserInfo({
     name: profileTitleInput.value,
@@ -89,6 +89,7 @@ const handleProfileFormSubmit = (evt) => {
     })
     .finally(() => {
       submitButton.textContent = originalText;
+      submitButton.disabled = false;
     });
 };
 
@@ -98,6 +99,7 @@ const handleAvatarFormSubmit = (evt) => {
   const submitButton = avatarForm.querySelector(validationSettings.submitButtonSelector);
   const originalText = submitButton.textContent;
   submitButton.textContent = "Сохранение...";
+  submitButton.disabled = true;
   
   setUserAvatar(avatarInput.value)
     .then((userData) => {
@@ -109,8 +111,8 @@ const handleAvatarFormSubmit = (evt) => {
       console.log("Ошибка при обновлении аватара:", err);
     })
     .finally(() => {
-      // Возвращаем исходный текст кнопки
       submitButton.textContent = originalText;
+      submitButton.disabled = false;
     });
 };
 
@@ -120,6 +122,7 @@ const handleCardFormSubmit = (evt) => {
   const submitButton = cardForm.querySelector(validationSettings.submitButtonSelector);
   const originalText = submitButton.textContent;
   submitButton.textContent = "Создание...";
+  submitButton.disabled = true;
   
   addNewCard({
     name: cardNameInput.value,
@@ -142,6 +145,7 @@ const handleCardFormSubmit = (evt) => {
     })
     .finally(() => {
       submitButton.textContent = originalText;
+      submitButton.disabled = false;
     });
 };
 
@@ -156,6 +160,7 @@ const handleConfirmDelete = (evt) => {
   const submitButton = confirmDeleteForm.querySelector(".popup__button");
   const originalText = submitButton.textContent;
   submitButton.textContent = "Удаление...";
+  submitButton.disabled = true;
   
   deleteCardApi(cardToDelete.id)
     .then(() => {
@@ -167,8 +172,8 @@ const handleConfirmDelete = (evt) => {
       console.log("Ошибка при удалении карточки:", err);
     })
     .finally(() => {
-      // Возвращаем исходный текст кнопки
       submitButton.textContent = originalText;
+      submitButton.disabled = false;
     });
 };
 
@@ -182,7 +187,6 @@ const handleLikeClick = (cardId, isLiked, cardElement) => {
     });
 };
 
-
 Promise.all([getUserInfo(), getCardList()])
   .then(([userData, cards]) => {
     currentUserID = userData._id;
@@ -191,12 +195,16 @@ Promise.all([getUserInfo(), getCardList()])
     profileDescription.textContent = userData.about;
     profileAvatar.style.backgroundImage = `url(${userData.avatar})`;
     
-    cards.forEach((cardData) => {
+    const sortedCards = cards.sort((a, b) => 
+      new Date(b.createdAt) - new Date(a.createdAt)
+    );
+    
+    sortedCards.forEach((cardData) => {
       placesWrap.append(
         createCardElement(cardData, {
           onPreviewPicture: handlePreviewPicture,
           onDeleteCard: handleDeleteClick,
-          onLikeIcon: (cardId, isLiked, cardElement) => handleLikeClick(cardId, isLiked, cardElement),
+          onLikeIcon: handleLikeClick,
         }, currentUserID)
       );
     });
@@ -204,7 +212,6 @@ Promise.all([getUserInfo(), getCardList()])
   .catch((err) => {
     console.log("Ошибка при загрузке данных:", err);
   });
-
 
 openProfileFormButton.addEventListener("click", () => {
   profileTitleInput.value = profileTitle.textContent;
@@ -229,7 +236,6 @@ profileForm.addEventListener("submit", handleProfileFormSubmit);
 avatarForm.addEventListener("submit", handleAvatarFormSubmit);
 cardForm.addEventListener("submit", handleCardFormSubmit);
 confirmDeleteForm.addEventListener("submit", handleConfirmDelete);
-
 
 const formatDate = (date) =>
   date.toLocaleDateString("ru-RU", {
@@ -333,7 +339,6 @@ const handleLogoClick = () => {
 
 const logo = document.querySelector(".logo");
 logo.addEventListener("click", handleLogoClick);
-
 
 const allPopups = document.querySelectorAll(".popup");
 allPopups.forEach((popup) => {
